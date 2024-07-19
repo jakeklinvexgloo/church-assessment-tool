@@ -258,9 +258,8 @@ const ProfileGenerator = ({ data, setData }) => {
         model: 'gpt-4o-mini',
       });
   
-      const recommendationsText = completion.choices[0].message.content;
+      const recommendationsText = completion.choices[0]?.message?.content || '';
       
-      // Parse the recommendations text into the required format
       const recommendations = {
         keyInsights: {
           surveyCompletion: ''
@@ -281,27 +280,29 @@ const ProfileGenerator = ({ data, setData }) => {
       };
   
       // Improved parsing logic
-      const sections = recommendationsText.split(/\d+\./g).filter(Boolean).map(s => s.trim());
+      const sections = recommendationsText.split(/\d+\./).filter(Boolean).map(s => s.trim());
       
       sections.forEach(section => {
-        if (section.toLowerCase().includes('key insights')) {
-          const surveyCompletionLine = section.split('\n').find(line => line.includes('Survey Completion:'));
+        const sectionLower = section.toLowerCase();
+        if (sectionLower.includes('key insights')) {
+          const surveyCompletionLine = section.split('\n').find(line => line.toLowerCase().includes('survey completion:'));
           if (surveyCompletionLine) {
-            recommendations.keyInsights.surveyCompletion = surveyCompletionLine.split(':')[1].trim();
+            const [, completionText] = surveyCompletionLine.split(':');
+            recommendations.keyInsights.surveyCompletion = completionText ? completionText.trim() : '';
           }
-        } else if (section.toLowerCase().includes('congregant flourishing')) {
-          const [strengths, growthAreas] = section.split('Growth Areas:');
+        } else if (sectionLower.includes('congregant flourishing')) {
+          const [strengths, growthAreas] = section.split(/growth areas:/i);
           recommendations.congregantFlourishing.strengths = extractBulletPoints(strengths);
           recommendations.congregantFlourishing.growthAreas = extractBulletPoints(growthAreas);
-        } else if (section.toLowerCase().includes('church thriving')) {
-          const [strengths, growthAreas] = section.split('Growth Areas:');
+        } else if (sectionLower.includes('church thriving')) {
+          const [strengths, growthAreas] = section.split(/growth areas:/i);
           recommendations.churchThriving.strengths = extractBulletPoints(strengths);
           recommendations.churchThriving.growthAreas = extractBulletPoints(growthAreas);
-        } else if (section.toLowerCase().includes('next steps to grow')) {
-          const [overall, yourPeople, yourChurch] = section.split(/Your People:|Your Church:/);
+        } else if (sectionLower.includes('next steps to grow')) {
+          const [overall, yourPeople, yourChurch] = section.split(/your people:|your church:/i);
           recommendations.nextStepsToGrow.overall = extractBulletPoints(overall);
-          recommendations.nextStepsToGrow.yourPeople = extractBulletPoints(yourPeople);
-          recommendations.nextStepsToGrow.yourChurch = extractBulletPoints(yourChurch);
+          recommendations.nextStepsToGrow.yourPeople = extractBulletPoints(yourPeople || '');
+          recommendations.nextStepsToGrow.yourChurch = extractBulletPoints(yourChurch || '');
         }
       });
   
@@ -320,9 +321,10 @@ const ProfileGenerator = ({ data, setData }) => {
   // Helper function to extract bullet points
   const extractBulletPoints = (text) => {
     if (!text) return [];
-    return text.split('•')
+    return text.split(/[•\-]/g)  // Split on bullet point or dash
       .map(point => point.trim())
-      .filter(Boolean);
+      .filter(Boolean)
+      .map(point => point.replace(/^\s*\*\s*/, ''));  // Remove leading asterisks
   };
 
   return (
