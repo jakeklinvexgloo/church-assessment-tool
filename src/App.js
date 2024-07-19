@@ -207,36 +207,57 @@ const ProfileGenerator = ({ data, setData }) => {
           completions: data.completions
         }
       };
-
-      const prompt = `Based on the following church assessment data, provide recommendations and insights structured as follows:
-
+  
+      const prompt = `Based on the following church assessment data, provide recommendations and insights structured exactly as follows:
+  
       1. Key Insights:
-         - Survey Completion: Compare the church's completion rate (${data.completions.percentage}%) to the average (25%). Provide a brief sentence or two on the church's success compared to others.
-
+         - Survey Completion: [Brief sentence comparing the church's completion rate (${data.completions.percentage}%) to the average (25%)]
+  
       2. Congregant Flourishing:
-         - Strengths: Identify which of the 6 questions were strengths (scores 67-100) and explain what this means.
-         - Growth Areas: Identify which of the 6 questions were growth areas or weaknesses (scores 0-66) and explain what this means.
-
+         - Strengths:
+           • [Strength 1: Brief explanation]
+           • [Strength 2: Brief explanation]
+           • [Add more if applicable]
+         - Growth Areas:
+           • [Growth Area 1: Brief explanation]
+           • [Growth Area 2: Brief explanation]
+           • [Add more if applicable]
+  
       3. Church Thriving:
-         - Strengths: Identify which of the 15 questions were strengths (scores 67-100) and explain what this means.
-         - Growth Areas: Identify which of the 15 questions were growth areas or weaknesses (scores 0-66) and explain what this means.
-
-      4. Next steps to grow:
-         - Overall: Provide 2-3 points on areas to grow overall.
-         - Your People: Provide 2-3 points to grow from the 6 congregant-related questions.
-         - Your Church: Provide 2-3 points to grow from the 15 church-related questions.
-
+         - Strengths:
+           • [Strength 1: Brief explanation]
+           • [Strength 2: Brief explanation]
+           • [Add more if applicable]
+         - Growth Areas:
+           • [Growth Area 1: Brief explanation]
+           • [Growth Area 2: Brief explanation]
+           • [Add more if applicable]
+  
+      4. Next Steps to Grow:
+         - Overall:
+           • [Step 1]
+           • [Step 2]
+           • [Step 3]
+         - Your People:
+           • [Step 1]
+           • [Step 2]
+           • [Step 3]
+         - Your Church:
+           • [Step 1]
+           • [Step 2]
+           • [Step 3]
+  
+      Please use the exact structure above, using • for bullet points. Identify strengths as scores 67-100 and growth areas as scores 0-66. Base your recommendations on the provided data and definitions for each score.
+  
       Here's the church assessment data:
-
-      ${JSON.stringify(promptData, null, 2)}
-
-      Please structure your response to match the outline above, using the provided data and definitions for each score.`;
-
+  
+      ${JSON.stringify(promptData, null, 2)}`;
+  
       const completion = await openai.chat.completions.create({
         messages: [{ role: 'user', content: prompt }],
         model: 'gpt-4o-mini',
       });
-
+  
       const recommendationsText = completion.choices[0].message.content;
       
       // Parse the recommendations text into the required format
@@ -258,29 +279,32 @@ const ProfileGenerator = ({ data, setData }) => {
           yourChurch: []
         }
       };
-
+  
       // Improved parsing logic
-      const sections = recommendationsText.split('###').filter(Boolean).map(s => s.trim());
+      const sections = recommendationsText.split(/\d+\./g).filter(Boolean).map(s => s.trim());
+      
       sections.forEach(section => {
         if (section.toLowerCase().includes('key insights')) {
-          const surveyCompletionLine = section.split('\n').find(line => line.toLowerCase().includes('survey completion'));
-          recommendations.keyInsights.surveyCompletion = surveyCompletionLine ? surveyCompletionLine.replace(/^[^:]+:/, '').trim() : 'No survey completion data available.';
+          const surveyCompletionLine = section.split('\n').find(line => line.includes('Survey Completion:'));
+          if (surveyCompletionLine) {
+            recommendations.keyInsights.surveyCompletion = surveyCompletionLine.split(':')[1].trim();
+          }
         } else if (section.toLowerCase().includes('congregant flourishing')) {
-          const [, strengths, growthAreas] = section.split(/strengths:|growth areas:/i).map(s => s.trim());
-          recommendations.congregantFlourishing.strengths = strengths.split('-').filter(Boolean).map(s => s.trim());
-          recommendations.congregantFlourishing.growthAreas = growthAreas.split('-').filter(Boolean).map(s => s.trim());
+          const [strengths, growthAreas] = section.split('Growth Areas:');
+          recommendations.congregantFlourishing.strengths = extractBulletPoints(strengths);
+          recommendations.congregantFlourishing.growthAreas = extractBulletPoints(growthAreas);
         } else if (section.toLowerCase().includes('church thriving')) {
-          const [, strengths, growthAreas] = section.split(/strengths:|growth areas:/i).map(s => s.trim());
-          recommendations.churchThriving.strengths = strengths.split('-').filter(Boolean).map(s => s.trim());
-          recommendations.churchThriving.growthAreas = growthAreas.split('-').filter(Boolean).map(s => s.trim());
+          const [strengths, growthAreas] = section.split('Growth Areas:');
+          recommendations.churchThriving.strengths = extractBulletPoints(strengths);
+          recommendations.churchThriving.growthAreas = extractBulletPoints(growthAreas);
         } else if (section.toLowerCase().includes('next steps to grow')) {
-          const [, overall, yourPeople, yourChurch] = section.split(/overall:|your people:|your church:/i).map(s => s.trim());
-          recommendations.nextStepsToGrow.overall = overall.split(/\d+\./).filter(Boolean).map(s => s.trim());
-          recommendations.nextStepsToGrow.yourPeople = yourPeople.split(/\d+\./).filter(Boolean).map(s => s.trim());
-          recommendations.nextStepsToGrow.yourChurch = yourChurch.split(/\d+\./).filter(Boolean).map(s => s.trim());
+          const [overall, yourPeople, yourChurch] = section.split(/Your People:|Your Church:/);
+          recommendations.nextStepsToGrow.overall = extractBulletPoints(overall);
+          recommendations.nextStepsToGrow.yourPeople = extractBulletPoints(yourPeople);
+          recommendations.nextStepsToGrow.yourChurch = extractBulletPoints(yourChurch);
         }
       });
-
+  
       setData(prevData => ({
         ...prevData,
         recommendations: recommendations
@@ -291,6 +315,14 @@ const ProfileGenerator = ({ data, setData }) => {
     } finally {
       setIsLoading(false);
     }
+  };
+  
+  // Helper function to extract bullet points
+  const extractBulletPoints = (text) => {
+    if (!text) return [];
+    return text.split('•')
+      .map(point => point.trim())
+      .filter(Boolean);
   };
 
   return (
