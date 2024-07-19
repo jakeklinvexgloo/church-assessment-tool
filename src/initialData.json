@@ -1,0 +1,144 @@
+{
+    "congregantFlourishing": {
+      "mentalAndPhysicalHealth": {
+        "score": 78,
+        "low": "A low score in Mental & Physical Health suggests that congregants may be struggling with stress, anxiety, or physical ailments. Consider implementing wellness programs, offering counseling services, or organizing health-focused small groups.",
+        "medium": "A medium score indicates that while some congregants are maintaining good mental and physical health, there's room for improvement. Continue promoting existing health initiatives and consider expanding them.",
+        "high": "A high score in Mental & Physical Health is commendable! Your congregation is doing well in maintaining their overall well-being. Consider becoming a resource for the wider community and encourage congregants to share their successful health practices."
+      },
+      "meaningAndPurpose": {
+        "score": 85,
+        "low": "A low score in Meaning & Purpose suggests that congregants may be struggling to connect their faith with their daily lives. Consider offering more targeted teaching on applying biblical principles to everyday situations.",
+        "medium": "A medium score indicates that while many congregants have a sense of purpose, there's potential for deeper understanding and application. Continue current programs that help people discover their gifts and callings.",
+        "high": "A high score in Meaning & Purpose is excellent! Your congregation has a strong sense of their role in God's plan. Consider developing leadership programs to help them mentor others and make an even greater impact in the church and community."
+      },
+      "characterAndVirtue": {
+        "score": 82,
+        "low": "A low score in Character & Virtue suggests a need for more focused teaching and application of biblical values. Consider implementing a church-wide study on the fruits of the Spirit or the Beatitudes.",
+        "medium": "A medium score indicates that while many congregants are growing in character, there's room for further development. Consider adding more practical workshops on applying biblical virtues in daily life.",
+        "high": "A high score in Character & Virtue is commendable! Your congregation is demonstrating strong biblical values. Consider ways to extend the impact of this strength beyond the church walls, perhaps through community service or mentorship programs."
+      },
+      "closeRelationships": {
+        "score": 79,
+        "low": "A low score in Close Relationships suggests that congregants may be feeling isolated or disconnected. Focus on strengthening your small group ministry and creating more opportunities for fellowship.",
+        "medium": "A medium score indicates that while many congregants have good relationships, there's room for deeper connections. Consider offering workshops on biblical relationships and conflict resolution.",
+        "high": "A high score in Close Relationships is excellent! Your congregation has strong, supportive connections. Encourage congregants to extend their circle of relationships to newcomers and the wider community."
+      },
+      "financialStability": {
+        "score": 72,
+        "low": "A low score in Financial Stability suggests that many congregants may be struggling with financial challenges. Consider offering financial literacy classes, budgeting workshops, and counseling services.",
+        "medium": "A medium score indicates that while many congregants have some financial stability, there's room for improvement. Consider more advanced topics like investing and retirement planning.",
+        "high": "A high score in Financial Stability is commendable! Your congregation is demonstrating good stewardship. Consider how this financial strength can be leveraged for increased ministry impact and community outreach."
+      }
+    },
+    "churchThriving": {
+      "fromCongregants": {
+        "connectedCommunity": {
+          "score": 88,
+          "low": "A low score in Connected Community suggests that congregants may feel isolated or disconnected from the church body. Focus on strengthening small group ministries and creating more opportunities for fellowship.",
+          "medium": "A medium score indicates that while there's a sense of community, there's room for stronger connections. Consider offering workshops on building meaningful relationships and resolving conflicts biblically.",
+          "high": "A high score in Connected Community is excellent! Your congregation feels strongly bonded. Encourage congregants to actively include newcomers and to extend the sense of community beyond the church walls."
+        },
+        "bibleCentered": {
+          "score": 92,
+          "low": "A low score in Bible Centered suggests a need for more emphasis on biblical teaching and application. Consider reviewing the church's teaching curriculum and offering more in-depth Bible studies.",
+          "medium": "A medium score indicates that while there's a foundation of biblical teaching, there's room for deeper engagement. Encourage Scripture memorization and provide tools for deeper biblical research and application.",
+          "high": "A high score in Bible Centered is commendable! Your congregation values and engages with Scripture. Consider offering courses in biblical languages or hermeneutics and encourage congregants to lead Bible studies."
+        },
+        "prayerCulture": {
+          "score": 86,
+          "low": "A low score in Prayer Culture suggests a need to emphasize the importance and power of prayer. Consider implementing regular prayer meetings and teaching on different types of prayer.",
+          "medium": "A medium score indicates a foundation of prayer, with room for growth. Consider adding more focused prayer events or a prayer ministry team.",
+          "high": "A high score in Prayer Culture is excellent! Your congregation values and practices prayer regularly. Consider advanced teaching on intercessory prayer or contemplative prayer practices."
+        },
+        "worshipExperience": {
+          "score": 90,
+          "low": "A low score in Worship Experience suggests a need to evaluate and possibly revitalize your worship services. Consider surveying the congregation for feedback and diversifying worship styles.",
+          "medium": "A medium score indicates that while many find the worship meaningful, there's room for enhancement. Consider incorporating more variety in styles or formats.",
+          "high": "A high score in Worship Experience is commendable! Your congregation finds the worship deeply meaningful. Consider offering worship leadership training and encourage creative expressions of worship beyond Sunday services."
+        },
+        "trustedLeaders": {
+          "score": 85,
+          "low": "A low score in Trusted Leaders suggests a need to build stronger relationships and transparency between leadership and the congregation. Focus on clear communication and accessibility of leaders.",
+          "medium": "A medium score indicates a foundation of trust, with room for improvement. Consider additional ways to involve the congregation in decision-making processes.",
+          "high": "A high score in Trusted Leaders is excellent! Your congregation has strong faith in its leadership. Consider how to develop new leaders within the congregation and leverage this trust for bold vision-casting."
+        },
+        "spiritualFormation": {
+          "score": 83,
+          "low": "A low score in Spiritual Formation suggests a need for more intentional discipleship processes. Consider implementing a clear spiritual growth pathway and offering more diverse spiritual formation classes.",
+          "medium": "A medium score indicates ongoing spiritual growth, with room for deeper formation. Consider adding more advanced spiritual formation courses and encourage mentoring relationships.",
+          "high": "A high score in Spiritual Formation is commendable! Your congregation is actively growing in faith. Consider offering advanced spiritual formation experiences, such as retreats or in-depth studies on mystical traditions."
+        },
+        "faithSharing": {
+          "score": 79,
+          "low": "A low score in Faith Sharing suggests a need to equip and encourage congregants in evangelism. Consider offering training in relational evangelism and providing opportunities to practice sharing testimonies.",
+          "medium": "A medium score indicates that while some are actively sharing their faith, there's room for more engagement. Consider adding more practical outreach opportunities.",
+          "high": "A high score in Faith Sharing is excellent! Your congregation is actively inviting others to faith. Consider advanced training in apologetics or cross-cultural evangelism."
+        },
+        "servingOthers": {
+          "score": 87,
+          "low": "A low score in Serving Others suggests a need to emphasize the importance of service and provide more opportunities to serve. Consider diversifying service opportunities and clearly communicating needs.",
+          "medium": "A medium score indicates active service, with room for increased engagement. Consider adding new initiatives based on community needs.",
+          "high": "A high score in Serving Others is commendable! Your congregation is actively engaged in service. Consider expanding to meet broader community or even global needs."
+        },
+        "hollisticStewardship": {
+          "score": 81,
+          "low": "A low score in Holistic Stewardship suggests a need for broader teaching on stewardship beyond finances. Consider offering workshops on time management, caring for the environment, and using one's talents for God's kingdom.",
+          "medium": "A medium score indicates understanding of stewardship, with room for deeper application. Consider adding practical workshops on areas like ethical consumption or work-life balance.",
+          "high": "A high score in Holistic Stewardship is excellent! Your congregation understands and practices broad stewardship. Consider advanced teaching on topics like biblical economics or creation care."
+        },
+        "leadershipDevelopment": {
+          "score": 84,
+          "low": "A low score in Leadership Development suggests a need for more intentional leadership training and opportunities. Consider implementing a formal leadership pipeline and offering more leadership courses.",
+          "medium": "A medium score indicates ongoing leadership development, with room for expansion. Consider adding more diverse leadership roles and training opportunities.",
+          "high": "A high score in Leadership Development is commendable! Your church is effectively cultivating leaders. Consider offering advanced leadership training or partnering with external leadership development organizations."
+        },
+        "socialImpact": {
+          "score": 80,
+          "low": "A low score in Social Impact suggests a need for greater engagement with community issues. Consider conducting a community needs assessment and partnering with local organizations.",
+          "medium": "A medium score indicates active community engagement, with room for increased impact. Consider expanding to address additional community needs.",
+          "high": "A high score in Social Impact is excellent! Your church is making a significant difference in the community. Consider tackling larger social issues or expanding your impact to a wider geographic area."
+        }
+      },
+      "fromLeaders": {
+        "futureImpact": {
+          "score": 89,
+          "low": "A low score in Future Impact suggests a need for clearer long-term vision and strategy. Consider engaging in a comprehensive strategic planning process, involving key stakeholders.",
+          "medium": "A medium score indicates a foundation for future impact, with room for refinement. Consider involving more diverse voices in the planning process.",
+          "high": "A high score in Future Impact is commendable! Your leadership has a strong vision for the future. Regularly evaluate and adjust plans based on changing needs and opportunities."
+        },
+        "resourceStability": {
+          "score": 76,
+          "low": "A low score in Resource Stability suggests a need for improved financial management and resource allocation. Consider conducting a thorough financial audit and developing a long-term financial strategy.",
+          "medium": "A medium score indicates reasonable resource management, with room for improvement. Consider implementing more advanced budgeting and forecasting tools.",
+          "high": "A high score in Resource Stability is excellent! Your church has strong financial health. Consider how to leverage this stability for increased ministry impact and model excellent stewardship for other churches."
+        },
+        "teamHealth": {
+          "score": 82,
+          "low": "A low score in Team Health suggests a need for improved staff relations and work environment. Consider conducting a staff satisfaction survey and implementing team-building activities.",
+          "medium": "A medium score indicates a reasonably healthy team dynamic, with room for enhancement. Consider offering professional development opportunities and implementing regular check-ins.",
+          "high": "A high score in Team Health is commendable! Your staff team is functioning well. Consider implementing advanced leadership development programs and finding ways for your team to mentor other church staffs."
+        },
+        "dataInformed": {
+          "score": 74,
+          "low": "A low score in Data Informed decision-making suggests a need for better data collection and utilization. Consider implementing a church management system and establishing key performance indicators.",
+          "medium": "A medium score indicates some use of data in decision-making, with room for improvement. Consider expanding data collection to more areas of church life.",
+          "high": "A high score in Data Informed decision-making is excellent! Your church effectively uses data to guide its strategies. Consider exploring advanced analytics or machine learning applications for ministry."
+        }
+      }
+    },
+    "averageWeeklyAttendance": 450,
+    "averageWeeklyGiving": 15000,
+    "baptismsThisYear": 32,
+    "intentToStay": 65,
+    "completions": {
+      "percentage": 78,
+      "goal": 500,
+      "actual": 390
+    },
+    "recommendations": {
+      "overall": [],
+      "yourPeople": [],
+      "yourChurch": []
+    }
+  }
