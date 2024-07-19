@@ -18,35 +18,42 @@ const openai = new OpenAI({
   dangerouslyAllowBrowser: true
 });
 
-const SummaryBox = ({ data }) => (
-  <Card className="mb-4 shadow-sm">
-    <CardHeader className="bg-blue-500 text-white p-2">
-      <h2 className="text-xl font-bold">Church Summary</h2>
-    </CardHeader>
-    <CardContent className="p-2 grid grid-cols-2 md:grid-cols-5 gap-2 text-sm">
-      <div>
-        <h3 className="font-semibold">Weekly Attendance</h3>
-        <p>{data.averageWeeklyAttendance}</p>
-      </div>
-      <div>
-        <h3 className="font-semibold">Weekly Giving</h3>
-        <p>${data.averageWeeklyGiving.toLocaleString()}</p>
-      </div>
-      <div>
-        <h3 className="font-semibold">Baptisms This Year</h3>
-        <p>{data.baptismsThisYear}</p>
-      </div>
-      <div>
-        <h3 className="font-semibold">Intent to Stay</h3>
-        <p>{data.intentToStay}</p>
-      </div>
-      <div>
-        <h3 className="font-semibold">Completions</h3>
-        <p>{data.completions.percentage}% ({data.completions.actual}/{data.completions.goal})</p>
-      </div>
-    </CardContent>
-  </Card>
-);
+const SummaryBox = ({ data }) => {
+  // Calculate the correct percentage
+  const completionPercentage = data.completions.goal > 0
+    ? Math.round((data.completions.actual / data.completions.goal) * 100)
+    : 0;
+
+  return (
+    <Card className="mb-4 shadow-sm">
+      <CardHeader className="bg-blue-500 text-white p-2">
+        <h2 className="text-xl font-bold">Church Summary</h2>
+      </CardHeader>
+      <CardContent className="p-2 grid grid-cols-2 md:grid-cols-5 gap-2 text-sm">
+        <div>
+          <h3 className="font-semibold">Weekly Attendance</h3>
+          <p>{data.averageWeeklyAttendance}</p>
+        </div>
+        <div>
+          <h3 className="font-semibold">Weekly Giving</h3>
+          <p>${data.averageWeeklyGiving.toLocaleString()}</p>
+        </div>
+        <div>
+          <h3 className="font-semibold">Baptisms This Year</h3>
+          <p>{data.baptismsThisYear}</p>
+        </div>
+        <div>
+          <h3 className="font-semibold">Intent to Stay</h3>
+          <p>{data.intentToStay}</p>
+        </div>
+        <div>
+          <h3 className="font-semibold">Completions</h3>
+          <p>{completionPercentage}% ({data.completions.actual}/{data.completions.goal})</p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
 
 const ScoreSection = ({ title, data, category, setData, isDefineSuccess }) => {
   const [localData, setLocalData] = useState(data);
@@ -196,6 +203,10 @@ const ProfileGenerator = ({ data, setData }) => {
   const generateRecommendations = async () => {
     setIsLoading(true);
     try {
+      const completionPercentage = data.completions.goal > 0
+        ? Math.round((data.completions.actual / data.completions.goal) * 100)
+        : 0;
+  
       const promptData = {
         congregantFlourishing: data.congregantFlourishing,
         churchThriving: data.churchThriving,
@@ -204,14 +215,18 @@ const ProfileGenerator = ({ data, setData }) => {
           averageWeeklyGiving: data.averageWeeklyGiving,
           baptismsThisYear: data.baptismsThisYear,
           intentToStay: data.intentToStay,
-          completions: data.completions
+          completions: {
+            percentage: completionPercentage,
+            actual: data.completions.actual,
+            goal: data.completions.goal
+          }
         }
       };
   
       const prompt = `Based on the following church assessment data, provide recommendations and insights structured exactly as follows:
   
       1. Key Insights:
-         - Survey Completion: [Brief sentence comparing the church's completion rate (${data.completions.percentage}%) to the average (25%)]
+         - Survey Completion: The church's completion rate is ${completionPercentage}%, compared to the average of 25%. [Brief sentence on what this means]
   
       2. Congregant Flourishing:
          - Strengths:
@@ -279,7 +294,7 @@ const ProfileGenerator = ({ data, setData }) => {
         }
       };
   
-      // Improved parsing logic
+      // Parsing logic
       const sections = recommendationsText.split(/\d+\./).filter(Boolean).map(s => s.trim());
       
       sections.forEach(section => {
