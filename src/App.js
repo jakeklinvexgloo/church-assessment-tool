@@ -19,9 +19,12 @@ const openai = new OpenAI({
 });
 
 const SummaryBox = ({ data }) => {
-  // Calculate the correct percentage
-  const completionPercentage = data.completions.goal > 0
-    ? Math.round((data.completions.actual / data.completions.goal) * 100)
+  // Set the goal to be 80% of the weekly attendance
+  const completionsGoal = Math.round(data.averageWeeklyAttendance * 0.8);
+  
+  // Calculate the correct percentage based on the new goal
+  const completionPercentage = completionsGoal > 0
+    ? Math.round((data.completions.actual / completionsGoal) * 100)
     : 0;
 
   return (
@@ -48,7 +51,7 @@ const SummaryBox = ({ data }) => {
         </div>
         <div>
           <h3 className="font-semibold">Completions</h3>
-          <p>{completionPercentage}% ({data.completions.actual}/{data.completions.goal})</p>
+          <p>{completionPercentage}% ({data.completions.actual}/{completionsGoal})</p>
         </div>
       </CardContent>
     </Card>
@@ -203,13 +206,44 @@ const ProfileGenerator = ({ data, setData }) => {
   const generateRecommendations = async () => {
     setIsLoading(true);
     try {
-      const completionPercentage = data.completions.goal > 0
-        ? Math.round((data.completions.actual / data.completions.goal) * 100)
+      console.log('Current data used for recommendations:', data);
+
+      // Set the goal to be 80% of the weekly attendance
+      const completionsGoal = Math.round(data.averageWeeklyAttendance * 0.8);
+      
+      // Calculate the correct percentage based on the new goal
+      const completionPercentage = completionsGoal > 0
+        ? Math.round((data.completions.actual / completionsGoal) * 100)
         : 0;
-  
+
+      const getDefinitionForScore = (score, definitions) => {
+        if (score >= 67) return definitions.high;
+        if (score >= 34) return definitions.medium;
+        return definitions.low;
+      };
+
+      const congregantFlourishingInsights = Object.entries(data.congregantFlourishing).map(([area, areaData]) => ({
+        area,
+        score: areaData.score,
+        definition: getDefinitionForScore(areaData.score, areaData)
+      }));
+
+      const churchThrivingInsights = {
+        fromCongregants: Object.entries(data.churchThriving.fromCongregants).map(([area, areaData]) => ({
+          area,
+          score: areaData.score,
+          definition: getDefinitionForScore(areaData.score, areaData)
+        })),
+        fromLeaders: Object.entries(data.churchThriving.fromLeaders).map(([area, areaData]) => ({
+          area,
+          score: areaData.score,
+          definition: getDefinitionForScore(areaData.score, areaData)
+        }))
+      };
+
       const promptData = {
-        congregantFlourishing: data.congregantFlourishing,
-        churchThriving: data.churchThriving,
+        congregantFlourishing: congregantFlourishingInsights,
+        churchThriving: churchThrivingInsights,
         summary: {
           averageWeeklyAttendance: data.averageWeeklyAttendance,
           averageWeeklyGiving: data.averageWeeklyGiving,
@@ -218,112 +252,52 @@ const ProfileGenerator = ({ data, setData }) => {
           completions: {
             percentage: completionPercentage,
             actual: data.completions.actual,
-            goal: data.completions.goal
+            goal: completionsGoal
           }
         }
       };
-  
-      const prompt = `Based on the following church assessment data, provide recommendations and insights structured exactly as follows:
-  
+
+      const prompt = `Based on the following church assessment data and predefined definitions, provide insights and recommendations. Use ONLY the provided definitions for each area, do not invent new recommendations.
+
       1. Key Insights:
-         - Survey Completion: The church's completion rate is ${completionPercentage}%, compared to the average of 25%. [Brief sentence on what this means]
-  
+         - Survey Completion: The church's completion rate is ${completionPercentage}% (${data.completions.actual} out of a goal of ${completionsGoal}, which is 80% of the weekly attendance of ${data.averageWeeklyAttendance}), compared to the average of 25%. [Brief sentence on what this means]
+
       2. Congregant Flourishing:
-         - Strengths:
-           • [Strength 1: Brief explanation]
-           • [Strength 2: Brief explanation]
-           • [Add more if applicable]
-         - Growth Areas:
-           • [Growth Area 1: Brief explanation]
-           • [Growth Area 2: Brief explanation]
-           • [Add more if applicable]
-  
+         - Strengths (scores 67-100):
+           • [List areas with high scores and their corresponding definitions]
+         - Growth Areas (scores 0-66):
+           • [List areas with low scores and their corresponding definitions]
+
       3. Church Thriving:
-         - Strengths:
-           • [Strength 1: Brief explanation]
-           • [Strength 2: Brief explanation]
-           • [Add more if applicable]
-         - Growth Areas:
-           • [Growth Area 1: Brief explanation]
-           • [Growth Area 2: Brief explanation]
-           • [Add more if applicable]
-  
+         - Strengths (scores 67-100):
+           • [List areas with high scores and their corresponding definitions]
+         - Growth Areas (scores 0-66):
+           • [List areas with low scores and their corresponding definitions]
+
       4. Next Steps to Grow:
          - Overall:
-           • [Step 1]
-           • [Step 2]
-           • [Step 3]
+           • [3 key points based on the definitions of the lowest scoring areas]
          - Your People:
-           • [Step 1]
-           • [Step 2]
-           • [Step 3]
+           • [3 key points based on the definitions of the lowest scoring areas in Congregant Flourishing]
          - Your Church:
-           • [Step 1]
-           • [Step 2]
-           • [Step 3]
-  
-      Please use the exact structure above, using • for bullet points. Identify strengths as scores 67-100 and growth areas as scores 0-66. Base your recommendations on the provided data and definitions for each score.
-  
-      Here's the church assessment data:
-  
-      ${JSON.stringify(promptData, null, 2)}`;
-  
+           • [3 key points based on the definitions of the lowest scoring areas in Church Thriving]
+
+      Here's the church assessment data and definitions:
+
+      ${JSON.stringify(promptData, null, 2)}
+
+      Provide concise, actionable insights based solely on the provided definitions. Do not generate new recommendations beyond what's given in the definitions.`;
+
       const completion = await openai.chat.completions.create({
         messages: [{ role: 'user', content: prompt }],
         model: 'gpt-4o-mini',
       });
-  
+
       const recommendationsText = completion.choices[0]?.message?.content || '';
-      
-      const recommendations = {
-        keyInsights: {
-          surveyCompletion: ''
-        },
-        congregantFlourishing: {
-          strengths: [],
-          growthAreas: []
-        },
-        churchThriving: {
-          strengths: [],
-          growthAreas: []
-        },
-        nextStepsToGrow: {
-          overall: [],
-          yourPeople: [],
-          yourChurch: []
-        }
-      };
-  
-      // Parsing logic
-      const sections = recommendationsText.split(/\d+\./).filter(Boolean).map(s => s.trim());
-      
-      sections.forEach(section => {
-        const sectionLower = section.toLowerCase();
-        if (sectionLower.includes('key insights')) {
-          const surveyCompletionLine = section.split('\n').find(line => line.toLowerCase().includes('survey completion:'));
-          if (surveyCompletionLine) {
-            const [, completionText] = surveyCompletionLine.split(':');
-            recommendations.keyInsights.surveyCompletion = completionText ? completionText.trim() : '';
-          }
-        } else if (sectionLower.includes('congregant flourishing')) {
-          const [strengths, growthAreas] = section.split(/growth areas:/i);
-          recommendations.congregantFlourishing.strengths = extractBulletPoints(strengths);
-          recommendations.congregantFlourishing.growthAreas = extractBulletPoints(growthAreas);
-        } else if (sectionLower.includes('church thriving')) {
-          const [strengths, growthAreas] = section.split(/growth areas:/i);
-          recommendations.churchThriving.strengths = extractBulletPoints(strengths);
-          recommendations.churchThriving.growthAreas = extractBulletPoints(growthAreas);
-        } else if (sectionLower.includes('next steps to grow')) {
-          const [overall, yourPeople, yourChurch] = section.split(/your people:|your church:/i);
-          recommendations.nextStepsToGrow.overall = extractBulletPoints(overall);
-          recommendations.nextStepsToGrow.yourPeople = extractBulletPoints(yourPeople || '');
-          recommendations.nextStepsToGrow.yourChurch = extractBulletPoints(yourChurch || '');
-        }
-      });
-  
+
       setData(prevData => ({
         ...prevData,
-        recommendations: recommendations
+        recommendations: recommendationsText
       }));
     } catch (error) {
       console.error('Error generating recommendations:', error);
@@ -331,15 +305,6 @@ const ProfileGenerator = ({ data, setData }) => {
     } finally {
       setIsLoading(false);
     }
-  };
-  
-  // Helper function to extract bullet points
-  const extractBulletPoints = (text) => {
-    if (!text) return [];
-    return text.split(/[•\-]/g)  // Split on bullet point or dash
-      .map(point => point.trim())
-      .filter(Boolean)
-      .map(point => point.replace(/^\s*\*\s*/, ''));  // Remove leading asterisks
   };
 
   return (
@@ -363,73 +328,7 @@ const ProfileGenerator = ({ data, setData }) => {
             <h3 className="text-xl font-bold">Recommendations</h3>
           </CardHeader>
           <CardContent className="p-2">
-            <Accordion type="multiple" defaultValue={['key-insights', 'congregant-flourishing', 'church-thriving', 'next-steps']} className="w-full">
-              <AccordionItem value="key-insights">
-                <AccordionTrigger>Key Insights</AccordionTrigger>
-                <AccordionContent>
-                  <p className="text-sm text-gray-700">
-                    <FormattedText text={data.recommendations.keyInsights?.surveyCompletion || "No survey completion data available."} />
-                  </p>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="congregant-flourishing">
-                <AccordionTrigger>Congregant Flourishing</AccordionTrigger>
-                <AccordionContent>
-                <h4 className="font-semibold mb-2">Strengths</h4>
-                  <ul className="list-disc pl-5 mb-4">
-                    {data.recommendations.congregantFlourishing?.strengths?.map((strength, index) => (
-                      <li key={index} className="text-sm text-gray-700"><FormattedText text={strength} /></li>
-                    ))}
-                  </ul>
-                  <h4 className="font-semibold mb-2">Growth Areas</h4>
-                  <ul className="list-disc pl-5">
-                    {data.recommendations.congregantFlourishing?.growthAreas?.map((area, index) => (
-                      <li key={index} className="text-sm text-gray-700"><FormattedText text={area} /></li>
-                    ))}
-                  </ul>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="church-thriving">
-                <AccordionTrigger>Church Thriving</AccordionTrigger>
-                <AccordionContent>
-                  <h4 className="font-semibold mb-2">Strengths</h4>
-                  <ul className="list-disc pl-5 mb-4">
-                    {data.recommendations.churchThriving?.strengths?.map((strength, index) => (
-                      <li key={index} className="text-sm text-gray-700"><FormattedText text={strength} /></li>
-                    ))}
-                  </ul>
-                  <h4 className="font-semibold mb-2">Growth Areas</h4>
-                  <ul className="list-disc pl-5">
-                    {data.recommendations.churchThriving?.growthAreas?.map((area, index) => (
-                      <li key={index} className="text-sm text-gray-700"><FormattedText text={area} /></li>
-                    ))}
-                  </ul>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="next-steps">
-                <AccordionTrigger>Next Steps to Grow</AccordionTrigger>
-                <AccordionContent>
-                  <h4 className="font-semibold mb-2">Overall</h4>
-                  <ul className="list-disc pl-5 mb-4">
-                    {data.recommendations.nextStepsToGrow?.overall?.map((step, index) => (
-                      <li key={index} className="text-sm text-gray-700"><FormattedText text={step} /></li>
-                    ))}
-                  </ul>
-                  <h4 className="font-semibold mb-2">Your People</h4>
-                  <ul className="list-disc pl-5 mb-4">
-                    {data.recommendations.nextStepsToGrow?.yourPeople?.map((step, index) => (
-                      <li key={index} className="text-sm text-gray-700"><FormattedText text={step} /></li>
-                    ))}
-                  </ul>
-                  <h4 className="font-semibold mb-2">Your Church</h4>
-                  <ul className="list-disc pl-5">
-                    {data.recommendations.nextStepsToGrow?.yourChurch?.map((step, index) => (
-                      <li key={index} className="text-sm text-gray-700"><FormattedText text={step} /></li>
-                    ))}
-                  </ul>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+            <FormattedText text={data.recommendations} />
           </CardContent>
         </Card>
       )}
