@@ -28,35 +28,34 @@ const SummaryBox = ({ data }) => {
     : 0;
 
   return (
-    <Card className="mb-4 shadow-sm">
-      <CardHeader className="bg-blue-500 text-white p-2">
-        <h2 className="text-xl font-bold">Church Summary</h2>
+    <Card className="mb-8 bg-white shadow-lg rounded-lg overflow-hidden">
+      <CardHeader className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-4">
+        <h2 className="text-2xl font-bold">Church Summary</h2>
       </CardHeader>
-      <CardContent className="p-2 grid grid-cols-2 md:grid-cols-5 gap-2 text-sm">
-        <div>
-          <h3 className="font-semibold">Weekly Attendance</h3>
-          <p>{data.averageWeeklyAttendance}</p>
-        </div>
-        <div>
-          <h3 className="font-semibold">Weekly Giving</h3>
-          <p>${data.averageWeeklyGiving.toLocaleString()}</p>
-        </div>
-        <div>
-          <h3 className="font-semibold">Baptisms This Year</h3>
-          <p>{data.baptismsThisYear}</p>
-        </div>
-        <div>
-          <h3 className="font-semibold">Intent to Stay</h3>
-          <p>{data.intentToStay}</p>
-        </div>
-        <div>
-          <h3 className="font-semibold">Completions</h3>
-          <p>{completionPercentage}% ({data.completions.actual}/{completionsGoal})</p>
+      <CardContent className="p-6">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <SummaryItem title="Weekly Attendance" value={data.averageWeeklyAttendance} />
+          <SummaryItem title="Weekly Giving" value={`$${data.averageWeeklyGiving.toLocaleString()}`} />
+          <SummaryItem title="Baptisms This Year" value={data.baptismsThisYear} />
+          <SummaryItem title="Intent to Stay" value={data.intentToStay} />
+          <SummaryItem 
+            title="Completions" 
+            value={`${completionPercentage}%`}
+            subtext={`(${data.completions.actual}/${completionsGoal})`}
+          />
         </div>
       </CardContent>
     </Card>
   );
 };
+
+const SummaryItem = ({ title, value, subtext }) => (
+  <div className="bg-indigo-50 p-4 rounded-lg">
+    <h3 className="text-sm font-semibold text-indigo-600 mb-1">{title}</h3>
+    <p className="text-2xl font-bold text-indigo-900">{value}</p>
+    {subtext && <p className="text-xs text-indigo-500 mt-1">{subtext}</p>}
+  </div>
+);
 
 const ScoreSection = ({ title, data, category, setData, isDefineSuccess }) => {
   const [localData, setLocalData] = useState(data);
@@ -308,51 +307,66 @@ const ProfileGenerator = ({ data, setData }) => {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="max-w-4xl mx-auto p-6 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-lg shadow-xl">
+      <h2 className="text-3xl font-bold text-indigo-800 mb-6">Church Assessment Dashboard</h2>
       <SummaryBox data={data} />
-      <div className="flex space-x-4 mb-4">
-        <Button onClick={generateNewProfile} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">Generate New Profile</Button>
-        <Button onClick={generateRecommendations} className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors" disabled={isLoading}>
+      <div className="flex space-x-4 mb-8">
+        <Button 
+          onClick={generateNewProfile} 
+          className="bg-indigo-600 text-white px-6 py-3 rounded-full hover:bg-indigo-700 transition-colors shadow-md hover:shadow-lg transform hover:-translate-y-1"
+        >
+          Generate New Profile
+        </Button>
+        <Button 
+          onClick={generateRecommendations} 
+          className="bg-emerald-600 text-white px-6 py-3 rounded-full hover:bg-emerald-700 transition-colors shadow-md hover:shadow-lg transform hover:-translate-y-1"
+          disabled={isLoading}
+        >
           {isLoading ? <Loader className="mr-2" /> : null}
           Generate Recommendations
         </Button>
       </div>
       {isLoading && (
-        <Card className="mb-4 p-4 flex items-center justify-center">
-          <Loader className="mr-2" /> Generating Recommendations...
+        <Card className="mb-8 p-6 bg-white shadow-lg rounded-lg">
+          <div className="flex items-center justify-center">
+            <Loader className="mr-3 text-indigo-600" />
+            <span className="text-lg font-semibold text-indigo-800">Generating Recommendations...</span>
+          </div>
         </Card>
       )}
       {data.recommendations && !isLoading && (
-        <Card className="mb-4 shadow-sm">
-          <CardHeader className="bg-green-500 text-white p-2">
-            <h3 className="text-xl font-bold">Recommendations</h3>
+        <Card className="mb-8 bg-white shadow-lg rounded-lg overflow-hidden">
+          <CardHeader className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-4">
+            <h3 className="text-2xl font-bold">Recommendations</h3>
           </CardHeader>
-          <CardContent className="p-2">
+          <CardContent className="p-6">
             <FormattedText text={data.recommendations} />
           </CardContent>
         </Card>
       )}
-      <ScoreSection 
-        title="Congregant Flourishing" 
-        data={data.congregantFlourishing} 
-        category="congregantFlourishing"
-        setData={setData}
-        isDefineSuccess={false}
-      />
-      <ScoreSection 
-        title="Church Thriving - From Congregants" 
-        data={data.churchThriving.fromCongregants} 
-        category="churchThriving.fromCongregants"
-        setData={setData}
-        isDefineSuccess={false}
-      />
-      <ScoreSection 
-        title="Church Thriving - From Leaders" 
-        data={data.churchThriving.fromLeaders} 
-        category="churchThriving.fromLeaders"
-        setData={setData}
-        isDefineSuccess={false}
-      />
+      <div className="space-y-8">
+        <ScoreSection 
+          title="Congregant Flourishing" 
+          data={data.congregantFlourishing} 
+          category="congregantFlourishing"
+          setData={setData}
+          isDefineSuccess={false}
+        />
+        <ScoreSection 
+          title="Church Thriving - From Congregants" 
+          data={data.churchThriving.fromCongregants} 
+          category="churchThriving.fromCongregants"
+          setData={setData}
+          isDefineSuccess={false}
+        />
+        <ScoreSection 
+          title="Church Thriving - From Leaders" 
+          data={data.churchThriving.fromLeaders} 
+          category="churchThriving.fromLeaders"
+          setData={setData}
+          isDefineSuccess={false}
+        />
+      </div>
     </div>
   );
 };

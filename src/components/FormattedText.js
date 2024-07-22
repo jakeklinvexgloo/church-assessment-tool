@@ -6,37 +6,31 @@ const FormattedText = ({ text }) => {
     return null;
   }
 
-  // Function to process inline bold text
   const processBoldText = (line) => {
     const parts = line.split(/(\*\*.*?\*\*)/);
     return parts.map((part, index) => {
       if (part.startsWith('**') && part.endsWith('**')) {
-        return <strong key={index}>{part.slice(2, -2)}</strong>;
+        return <strong key={index} className="font-semibold text-indigo-700">{part.slice(2, -2)}</strong>;
       }
       return part;
     });
   };
 
-  // Split the text into lines
   const lines = text.split('\n');
 
   return (
-    <div className="whitespace-pre-wrap">
+    <div className="text-gray-800">
       {lines.map((line, index) => {
-        // Check if the line is a header
         if (line.startsWith('###')) {
-          return <h3 key={index} className="text-xl font-bold mt-4 mb-2">{processBoldText(line.replace('###', '').trim())}</h3>;
+          return <h3 key={index} className="text-2xl font-bold text-indigo-800 mt-6 mb-4">{processBoldText(line.replace('###', '').trim())}</h3>;
         }
-        // Check if the line is a subheader
         if (line.startsWith('- **') && line.endsWith(':**')) {
-          return <h4 key={index} className="text-lg font-semibold mt-3 mb-1">{processBoldText(line.replace(/[-*]/g, '').trim())}</h4>;
+          return <h4 key={index} className="text-xl font-semibold text-indigo-700 mt-4 mb-2">{processBoldText(line.replace(/[-*]/g, '').trim())}</h4>;
         }
-        // Check if the line is a bullet point
         if (line.trim().startsWith('•') || line.trim().startsWith('-')) {
-          return <li key={index} className="ml-6">{processBoldText(line.replace(/^[•-]\s*/, ''))}</li>;
+          return <li key={index} className="ml-6 mb-2 text-gray-700">{processBoldText(line.replace(/^[•-]\s*/, ''))}</li>;
         }
-        // Regular text
-        return <p key={index} className="mb-2">{processBoldText(line)}</p>;
+        return <p key={index} className="mb-3 leading-relaxed">{processBoldText(line)}</p>;
       })}
     </div>
   );
